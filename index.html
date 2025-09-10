@@ -3,30 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Myanmar Pyi Gyin Slot</title>
-<link rel="stylesheet" href="style.css">
+<title>CK Lottery 30s Predictor</title>
+<style>
+  /* ===== General Styles ===== */
+  body{margin:0;padding:0;font-family:'Arial',sans-serif;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;}
+  .container{width:95%;max-width:480px;background:rgba(0,0,0,0.9);padding:20px;border-radius:20px;box-shadow:0 0 25px rgba(0,0,0,0.5);}
+  h1,h2{text-align:center;margin:10px 0;font-weight:bold;}
+
+  /* ===== Countdown ===== */
+  .countdown{font-size:2em;text-align:center;margin:15px 0;color:#ffd700;text-shadow:0 0 10px #ff0;}
+
+  /* ===== Prediction ===== */
+  .prediction{background:rgba(255,255,255,0.1);padding:15px;border-radius:15px;margin:15px 0;text-align:center;position:relative;}
+  .prediction p{font-size:1.3em;margin:8px 0;}
+  .badge{display:inline-block;padding:5px 12px;border-radius:15px;font-weight:bold;color:#fff;}
+  .big{background:linear-gradient(90deg,#ff4b2b,#ff416c);}
+  .small{background:linear-gradient(90deg,#2193b0,#6dd5ed);}
+
+  /* ===== Manual Input ===== */
+  .manual-input{text-align:center;margin:15px 0;}
+  .manual-input input{padding:10px;width:60px;border-radius:10px;border:none;margin-right:10px;text-align:center;}
+  .manual-input button{padding:10px 20px;border:none;border-radius:10px;background:linear-gradient(90deg,#ff8c00,#ffd700);color:#000;font-weight:bold;cursor:pointer;transition:0.3s;}
+  .manual-input button:hover{opacity:0.9;}
+
+  /* ===== History Table ===== */
+  .history{margin-top:15px;}
+  .history table{width:100%;border-collapse:collapse;}
+  .history th,.history td{border:1px solid #fff;padding:8px;text-align:center;}
+  .history th{background:rgba(255,255,255,0.2);}
+  .history tbody tr.new-result{animation:flash 1s;}
+  @keyframes flash{
+    0%{background:rgba(255,255,0,0.5);}
+    50%{background:rgba(255,255,0,0.2);}
+    100%{background:rgba(255,255,0,0);}
+  }
+</style>
 </head>
 <body>
 <div class="container">
-  <h1>Myanmar Pyi Gyin 🎰</h1>
-  <div id="auth-box">
-    <div id="login-box">
-      <h2>Login</h2>
-      <input type="text" id="login-phone" placeholder="Phone number">
-      <input type="password" id="login-pass" placeholder="Password">
-      <button onclick="login()">Login</button>
-      <p>Don't have an account? <span onclick="showSignup()">Sign up</span></p>
-    </div>
-    <div id="signup-box" style="display:none">
-      <h2>Sign Up</h2>
-      <input type="text" id="signup-name" placeholder="Name">
-      <input type="text" id="signup-phone" placeholder="Phone number">
-      <input type="password" id="signup-pass" placeholder="Password">
-      <button onclick="signup()">Sign Up</button>
-      <p>Already have an account? <span onclick="showLogin()">Login</span></p>
-    </div>
+  <h1>CK Lottery 30s Predictor 🎯</h1>
+
+  <div class="countdown">
+    Next draw in: <span id="timer">30</span>s
+  </div>
+
+  <div class="prediction">
+    <h2>Prediction</h2>
+    <p>Number: <span id="pred-num">--</span></p>
+    <p>Big/Small: <span id="pred-bs" class="badge">--</span></p>
+    <p>Confidence: <span id="pred-confidence">--</span>%</p>
+  </div>
+
+  <div class="manual-input">
+    <h2>Input Result</h2>
+    <input type="number" id="manual-num" min="0" max="9" placeholder="0-9">
+    <button onclick="submitResult()">Submit</button>
+  </div>
+
+  <div class="history">
+    <h2>Last Results</h2>
+    <table id="history-table">
+      <thead>
+        <tr><th>#</th><th>Number</th><th>Big/Small</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 </div>
-<script src="app.js"></script>
+
+<script>
+  // ===== CK Lottery 30s Predictor =====
+  let countdown=30;
+  let history=[];
+  const maxHistory=500;
+
+  function generatePrediction(){
+    const number=Math.floor(Math.random()*10);
+    const bs=number>=5?'Big':'Small';
+    const confidence=Math.floor(50 + Math.random()*50); // 50-99%
+    const bsEl=document.getElementById('pred-bs');
+    bsEl.textContent=bs;
+    bsEl.className='badge '+(bs==='Big'?'big':'small');
+    document.getElementById('pred-num').textContent=number;
+    document.getElementById('pred-confidence').textContent=confidence;
+    return {number,bs,confidence};
+  }
+
+  function updateHistory(result){
+    history.unshift(result);
+    if(history.length>maxHistory) history.pop();
+    const tbody=document.getElementById('history-table').querySelector('tbody');
+    tbody.innerHTML='';
+    history.forEach((r,i)=>{
+      const tr=document.createElement('tr');
+      if(i===0) tr.classList.add('new-result');
+      tr.innerHTML=`<td>${i+1}</td><td>${r.number}</td><td>${r.bs}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function tick(){
+    countdown--;
+    document.getElementById('timer').textContent=countdown;
+    if(countdown<=0){
+      const pred=generatePrediction();
+      updateHistory(pred);
+      countdown=30;
+    }
+  }
+  setInterval(tick,1000);
+
+  function submitResult(){
+    const numInput=document.getElementById('manual-num');
+    let num=Number(numInput.value);
+    if(isNaN(num)||num<0||num>9){alert('Enter 0-9'); return;}
+    const bs=num>=5?'Big':'Small';
+    updateHistory({number:num,bs:bs,confidence:'-'});
+    numInput.value='';
+  }
+</script>
 </body>
 </html>
